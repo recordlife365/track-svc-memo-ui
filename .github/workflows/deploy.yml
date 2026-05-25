@@ -21,15 +21,14 @@ jobs:
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.DO_SPACES_KEY }}
-          aws-secret-access-key: ${{ secrets.DO_SPACES_SECRET }}
-          aws-region: us-east-1
-
       - name: Upload to DO Spaces
+        env:
+          DO_KEY: ${{ secrets.DO_SPACES_KEY }}
+          DO_SECRET: ${{ secrets.DO_SPACES_SECRET }}
         run: |
+          aws configure set aws_access_key_id "$DO_KEY"
+          aws configure set aws_secret_access_key "$DO_SECRET"
+          aws configure set default.region us-east-1
           aws s3 sync dist/ s3://lifememo/ui/ \
             --endpoint-url https://sfo3.digitaloceanspaces.com \
             --acl public-read \
