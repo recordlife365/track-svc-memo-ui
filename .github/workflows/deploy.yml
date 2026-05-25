@@ -30,4 +30,4 @@ jobs:
           space_region: sfo3
           source: dist
           out_dir: ui
-          acl: public-read
+          permission: public-read
