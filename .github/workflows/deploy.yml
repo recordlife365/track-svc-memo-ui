@@ -30,7 +30,7 @@ jobs:
           aws configure set aws_access_key_id "$DO_KEY"
           aws configure set aws_secret_access_key "$DO_SECRET"
           aws configure set default.region us-east-1
-          aws s3 sync dist/ s3://lifememo/ui/ \
+          aws s3 sync dist/ s3://lifememo/ \
             --endpoint-url https://sfo3.digitaloceanspaces.com \
             --acl public-read \
             --delete
