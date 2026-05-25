@@ -22,12 +22,11 @@ jobs:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
       - name: Upload to DO Spaces
-        uses: BetaHuhn/do-spaces-action@v2
-        with:
-          access_key: ${{ secrets.DO_SPACES_KEY }}
-          secret_key: ${{ secrets.DO_SPACES_SECRET }}
-          space_name: lifememo
-          space_region: sfo3
-          source: dist
-          out_dir: ui
-          permission: public-read
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.DO_SPACES_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SPACES_SECRET }}
+        run: |
+          aws s3 sync dist/ s3://lifememo/ui/ \
+            --endpoint-url https://sfo3.digitaloceanspaces.com \
+            --acl public-read \
+            --delete
