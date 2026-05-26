@@ -3,7 +3,7 @@ import axios from 'axios';
 // In dev, VITE_API_URL is unset so requests hit /auth and Vite's proxy
 // forwards them to localhost:8081. In production, DigitalOcean injects
 // VITE_API_URL (e.g. https://api.yourdomain.com/auth) at build time.
-const BASE_URL = import.meta.env.VITE_API_URL ?? '/auth';
+const BASE_URL = import.meta.env.VITE_API_URL ?? '';
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -27,7 +27,7 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401 && !original._retried) {
       original._retried = true;
       try {
-        const { data } = await axios.post(`${BASE_URL}/refresh`, {}, { withCredentials: true });
+        const { data } = await axios.post(`${BASE_URL}/auth/refresh`, {}, { withCredentials: true });
         sessionStorage.setItem('accessToken', data.accessToken);
         original.headers.Authorization = `Bearer ${data.accessToken}`;
         return apiClient(original);
@@ -41,20 +41,20 @@ apiClient.interceptors.response.use(
 
 export const authApi = {
   register: (email, password) =>
-    apiClient.post('/register', { email, password }),
+    apiClient.post('/auth/register', { email, password }),
 
   login: (email, password) =>
-    apiClient.post('/login', { email, password }),
+    apiClient.post('/auth/login', { email, password }),
 
   logout: () =>
-    apiClient.post('/logout'),
+    apiClient.post('/auth/logout'),
 
   refresh: () =>
-    apiClient.post('/refresh'),
+    apiClient.post('/auth/refresh'),
 
   requestPasswordReset: (email) =>
-    apiClient.post('/password/reset-request', { email }),
+    apiClient.post('/auth/password/reset-request', { email }),
 
   resetPassword: (token, newPassword) =>
-    apiClient.post('/password/reset', { token, newPassword }),
+    apiClient.post('/auth/password/reset', { token, newPassword }),
 };
